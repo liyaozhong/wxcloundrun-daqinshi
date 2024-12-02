@@ -19,7 +19,10 @@ db = SQLAlchemy(app)
 
 # 注册蓝图 - 使用url_prefix指定访问前缀
 from wxcloudrun.auth.views import auth
+from wxcloudrun.location.views import location
+
 app.register_blueprint(auth, url_prefix='/api/auth')
+app.register_blueprint(location, url_prefix='/api/location')
 
 # 加载配置
 app.config.from_object('config')
