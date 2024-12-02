@@ -11,11 +11,15 @@ app = Flask(__name__, instance_relative_config=True)
 app.config['DEBUG'] = config.DEBUG
 
 # 设定数据库链接
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(config.username, config.password,
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/daqinshi'.format(config.username, config.password,
                                                                              config.db_address)
 
 # 初始化DB操作对象
 db = SQLAlchemy(app)
+
+# 注册蓝图 - 使用url_prefix指定访问前缀
+from wxcloudrun.auth.views import auth
+app.register_blueprint(auth, url_prefix='/api/auth')
 
 # 加载控制器
 from wxcloudrun import views
