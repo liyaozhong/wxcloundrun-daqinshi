@@ -96,4 +96,45 @@ def authorize():
     return jsonify({
         'code': 0,
         'msg': '授权成功'
-    }) 
+    })
+
+@auth.route('/update_user', methods=['POST'])
+def update_user():
+    """更新用户信息"""
+    data = request.get_json()
+    code = data.get('code')
+    nickname = data.get('nickname')
+    avatar_url = data.get('avatarUrl')
+    
+    # 通过code获取openid
+    appid = config.WECHAT_APPID
+    secret = config.WECHAT_SECRET
+    url = f'https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code'
+    
+    resp = requests.get(url)
+    result = resp.json()
+    openid = result.get('openid')
+    
+    if not openid:
+        return jsonify({'code': -1, 'msg': '更新失败'})
+    
+    # 更新用户信息
+    user = User.query.filter_by(openid=openid).first()
+    if user:
+        user.nickname = nickname
+        user.avatar_url = avatar_url
+        user.is_authorized = True
+        db.session.commit()
+        
+        return jsonify({
+            'code': 0,
+            'data': {
+                'userInfo': {
+                    'nickname': user.nickname,
+                    'avatarUrl': user.avatar_url
+                }
+            },
+            'msg': '更新成功'
+        })
+    
+    return jsonify({'code': -1, 'msg': '用户不存在'}) 
