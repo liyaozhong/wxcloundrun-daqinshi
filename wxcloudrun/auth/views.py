@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from wxcloudrun.auth.models import User
 from wxcloudrun import db
+from .. import config
 import requests
 import os
 
@@ -13,8 +14,8 @@ def login():
     code = data.get('code')
     
     # 通过code获取openid
-    appid = os.environ.get('WECHAT_APPID')
-    secret = os.environ.get('WECHAT_SECRET')
+    appid = config.WECHAT_APPID
+    secret = config.WECHAT_SECRET
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code'
     
     resp = requests.get(url)
@@ -67,8 +68,8 @@ def authorize():
     print(f"收到授权请求，code: {code}")
     
     # 通过code获取openid
-    appid = os.environ.get('WECHAT_APPID')
-    secret = os.environ.get('WECHAT_SECRET')
+    appid = config.WECHAT_APPID
+    secret = config.WECHAT_SECRET
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code'
     
     # 添加环境变量检查
