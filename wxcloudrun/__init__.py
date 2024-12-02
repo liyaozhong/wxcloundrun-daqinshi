@@ -21,8 +21,5 @@ db = SQLAlchemy(app)
 from wxcloudrun.auth.views import auth
 app.register_blueprint(auth, url_prefix='/api/auth')
 
-# 加载控制器
-from wxcloudrun import views
-
 # 加载配置
 app.config.from_object('config')

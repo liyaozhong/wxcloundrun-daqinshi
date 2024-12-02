@@ -7,6 +7,14 @@ import os
 
 auth = Blueprint('auth', __name__)
 
+@auth.route('/', methods=['GET'])
+def index():
+    """认证模块根路由"""
+    return jsonify({
+        'code': 0,
+        'msg': 'Auth service is running'
+    })
+
 @auth.route('/login', methods=['POST'])
 def login():
     """微信登录接口"""
