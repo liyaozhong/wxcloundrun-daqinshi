@@ -38,6 +38,11 @@ def login():
         db.session.add(user)
         db.session.commit()
         return jsonify({'code': 1, 'msg': '用户未授权'})
+    else:
+        # 更新现有用户信息
+        user.nickname = data.get('nickname')
+        user.avatar_url = data.get('avatar_url')
+        db.session.commit()
     
     if not user.is_authorized:
         return jsonify({'code': 1, 'msg': '用户未授权'})
@@ -58,17 +63,29 @@ def authorize():
     data = request.get_json()
     code = data.get('code')
     
+    # 添加日志记录
+    print(f"收到授权请求，code: {code}")
+    
     # 通过code获取openid
     appid = os.environ.get('WECHAT_APPID')
     secret = os.environ.get('WECHAT_SECRET')
     url = f'https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={code}&grant_type=authorization_code'
     
+    # 添加环境变量检查
+    if not appid or not secret:
+        print("微信配置缺失：", {"appid": appid, "secret": bool(secret)})
+        return jsonify({'code': -1, 'msg': '服务器配置错误'})
+    
     resp = requests.get(url)
     result = resp.json()
-    openid = result.get('openid')
+    # 添加微信API返回结果日志
+    print("微信API返回：", result)
     
+    openid = result.get('openid')
     if not openid:
-        return jsonify({'code': -1, 'msg': '授权失败'})
+        error_msg = f"微信授权失败：{result.get('errmsg', '未知错误')}"
+        print(error_msg)
+        return jsonify({'code': -1, 'msg': error_msg})
     
     # 查找或创建用户
     user = User.query.filter_by(openid=openid).first()
