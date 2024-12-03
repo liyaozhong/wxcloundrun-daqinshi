@@ -140,4 +140,29 @@ def update_user():
             'msg': '更新成功'
         })
     
-    return jsonify({'code': -1, 'msg': '用户不存在'}) 
+    return jsonify({'code': -1, 'msg': '用户不存在'})
+
+@auth.route('/list', methods=['GET'])
+def list_users():
+    """获取用户列表"""
+    try:
+        # 只获取已授权的用户
+        users = User.query.filter_by(is_authorized=True).all()
+        
+        return jsonify({
+            'code': 0,
+            'data': {
+                'users': [{
+                    'user_id': user.id,
+                    'nickname': user.nickname,
+                    'avatar_url': user.avatar_url,
+                    'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                } for user in users]
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'code': -1,
+            'msg': f'获取用户列表失败: {str(e)}'
+        })
