@@ -8,7 +8,6 @@ class Activity(db.Model):
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
     activity_date = db.Column(db.Date, nullable=False)
-    activity_time = db.Column(db.Time)
     location_name = db.Column(db.String(255))
     location_latitude = db.Column(db.Numeric(10, 8))
     location_longitude = db.Column(db.Numeric(11, 8))

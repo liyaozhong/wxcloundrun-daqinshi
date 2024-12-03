@@ -21,10 +21,12 @@ db = SQLAlchemy(app)
 from wxcloudrun.auth.views import auth
 from wxcloudrun.location.views import location
 from wxcloudrun.activity.views import activity
+from wxcloudrun.media.views import media
 
 app.register_blueprint(auth, url_prefix='/api/auth')
 app.register_blueprint(location, url_prefix='/api/location')
 app.register_blueprint(activity, url_prefix='/api/activity')
+app.register_blueprint(media, url_prefix='/api/media')
 
 # 加载配置
 app.config.from_object('config')
