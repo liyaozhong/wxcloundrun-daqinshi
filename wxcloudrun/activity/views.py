@@ -241,4 +241,49 @@ def get_activity_detail():
         })
         
     except Exception as e:
-        return jsonify({'code': -1, 'msg': f'查询失败: {str(e)}'}) 
+        return jsonify({'code': -1, 'msg': f'查询失败: {str(e)}'})
+
+@activity.route('/user_activities', methods=['GET'])
+def get_user_activities():
+    """获取用户参与的活动列表"""
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'code': -1, 'msg': '缺少用户ID'})
+        
+    try:
+        # 查询用户参与的所有活动
+        activities = Activity.query\
+            .join(ActivityParticipant)\
+            .filter(ActivityParticipant.person_id == user_id)\
+            .order_by(Activity.activity_date.desc())\
+            .all()
+            
+        # 处理活动数据
+        now = datetime.now()
+        activities_list = []
+        for item in activities:
+            # 计算活动是否已过期
+            is_expired = item.activity_date < now.date()
+            
+            activities_list.append({
+                'id': item.id,
+                'title': item.title,
+                'description': item.description,
+                'activity_date': item.activity_date.strftime('%Y-%m-%d'),
+                'location_name': item.location_name,
+                'status': item.status,
+                'isExpired': is_expired
+            })
+            
+        return jsonify({
+            'code': 0,
+            'data': {
+                'activities': activities_list
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'code': -1,
+            'msg': f'获取活动列表失败: {str(e)}'
+        }) 

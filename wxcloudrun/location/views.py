@@ -6,25 +6,31 @@ location = Blueprint('location', __name__)
 
 @location.route('/list', methods=['GET'])
 def get_locations():
-    # 从请求参数获取用户ID
-    data = request.args
-    user_id = data.get('user_id')
+    """获取用户的活动范围列表"""
+    user_id = request.args.get('user_id')
     if not user_id:
         return jsonify({'code': -1, 'msg': '缺少用户ID'})
     
-    locations = Location.query.filter_by(user_id=user_id).all()
-    return jsonify({
-        'code': 0,
-        'data': {
-            'locations': [{
-                'id': loc.id,
-                'name': loc.name,
-                'address': loc.address,
-                'latitude': loc.latitude,
-                'longitude': loc.longitude
-            } for loc in locations]
-        }
-    })
+    try:
+        locations = Location.query.filter_by(user_id=user_id).all()
+        return jsonify({
+            'code': 0,
+            'data': {
+                'locations': [{
+                    'id': loc.id,
+                    'name': loc.name,
+                    'address': loc.address,
+                    'latitude': float(loc.latitude),  # 确保返回数字类型
+                    'longitude': float(loc.longitude),
+                    'created_at': loc.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                } for loc in locations]
+            }
+        })
+    except Exception as e:
+        return jsonify({
+            'code': -1,
+            'msg': f'获取位置列表失败: {str(e)}'
+        })
 
 @location.route('/add', methods=['POST'])
 def add_location():

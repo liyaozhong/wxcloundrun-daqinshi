@@ -166,3 +166,33 @@ def list_users():
             'code': -1,
             'msg': f'获取用户列表失败: {str(e)}'
         })
+
+@auth.route('/detail', methods=['GET'])
+def get_user_detail():
+    """获取用户详情"""
+    user_id = request.args.get('user_id')
+    if not user_id:
+        return jsonify({'code': -1, 'msg': '缺少用户ID'})
+        
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'code': -1, 'msg': '用户不存在'})
+            
+        return jsonify({
+            'code': 0,
+            'data': {
+                'user': {
+                    'id': user.id,
+                    'nickname': user.nickname,
+                    'avatar_url': user.avatar_url,
+                    'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S')
+                }
+            }
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'code': -1,
+            'msg': f'获取用户详情失败: {str(e)}'
+        })
