@@ -46,6 +46,7 @@ def login():
         'code': 0,
         'data': {
             'userInfo': {
+                'id': user.id,
                 'nickname': user.nickname,
                 'avatarUrl': user.avatar_url
             }
@@ -78,6 +79,7 @@ def authorize():
             'code': 0,
             'data': {
                 'userInfo': {
+                    'id': user.id,
                     'nickname': user.nickname,
                     'avatarUrl': user.avatar_url
                 }
@@ -130,6 +132,7 @@ def update_user():
             'code': 0,
             'data': {
                 'userInfo': {
+                    'id': user.id,
                     'nickname': user.nickname,
                     'avatarUrl': user.avatar_url
                 }
