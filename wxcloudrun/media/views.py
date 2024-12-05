@@ -40,8 +40,7 @@ def list_media():
     try:
         query = Media.query
         if tag:
-            query = query.filter(Media.tags.contains([tag]))
-            
+            query = query.filter(Media.tags.contains(tag))
         total = query.count()
         media_list = query.order_by(Media.created_at.desc())\
             .offset((page - 1) * page_size)\
